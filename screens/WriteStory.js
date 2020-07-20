@@ -1,7 +1,19 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, TextInput , Image} from 'react-native';
+import { StyleSheet, Text, View, TextInput , Image, TouchableOpacity} from 'react-native';
 import { Header } from 'react-native-elements';
 export default class WriteStoryScreen extends React.Component {
+    
+    constructor(){
+      super();
+      this.state = {
+        storyTitle:'',
+        storyContent:'',
+      }
+    }
+    onButtonPress = () => {
+      console.log(this.state.storyTitle)
+      console.log(this.state.storyContent)
+    }
     render(){
       return(
         <View style = {{backgroundColor:'black', flex:1}}>
@@ -12,11 +24,28 @@ export default class WriteStoryScreen extends React.Component {
               style: { color: 'white', fontSize: 20 },
             }}
           />
-          <Text style = {{color:'pink', alignSelf:'center'}}>Write your story here 👇</Text>
           <TextInput
-            style = {{borderWidth:3, borderColor:'pink', paddingLeft:10,color:'pink', paddingRight:10, height:'60%'}}
-            multiline={true}
+            style = {{borderWidth:3, borderColor:'white', paddingLeft:10,color:'white',paddingRight:10}}
+            placeholder="Enter your Story Title Here"
+            onChangeText={(text) => {
+              this.setState({ storyTitle: text });
+            }}
+            value={this.state.storyTitle}
           />
+          <TextInput
+            style = {{borderWidth:3, borderColor:'pink', paddingLeft:10, marginTop:5, color:'pink', paddingRight:10, height:'50%'}}
+            multiline={true}
+            placeholder="Enter your story here"
+            onChangeText={(text) => {
+              this.setState({storyContent: text})
+            }}
+            value = {this.state.storyContent}
+          />
+
+          <TouchableOpacity onPress={this.onButtonPress} style = {{borderColor:'pink', borderWidth:3, width:60, marginTop:10, alignSelf:'center'}}>
+            <Text style = {{color:'white', alignSelf:'center'}}>Submit</Text>
+          </TouchableOpacity>
+
           <Image
             source={{
               uri:
