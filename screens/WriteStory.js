@@ -1,5 +1,7 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, TextInput , Image, TouchableOpacity} from 'react-native';
+import * as firebase from 'firebase';
+import db from '../config'
+import { StyleSheet, Text, View, TextInput , Image, TouchableOpacity, Alert} from 'react-native';
 import { Header } from 'react-native-elements';
 export default class WriteStoryScreen extends React.Component {
     
@@ -8,11 +10,17 @@ export default class WriteStoryScreen extends React.Component {
       this.state = {
         storyTitle:'',
         storyContent:'',
+        storyAuthor:'',
       }
     }
-    onButtonPress = () => {
-      console.log(this.state.storyTitle)
-      console.log(this.state.storyContent)
+    onButtonPress = async () => {
+      db.collection('stories').add({
+        'storyTitle' : this.state.storyTitle,
+        'storyContent' : this.state.storyContent,
+        'storyAuthor' : this.state.storyAuthor,
+      })
+      Alert.alert("Submission complete")
+      
     }
     render(){
       return(
@@ -32,8 +40,18 @@ export default class WriteStoryScreen extends React.Component {
             }}
             value={this.state.storyTitle}
           />
+
           <TextInput
-            style = {{borderWidth:3, borderColor:'pink', paddingLeft:10, marginTop:5, color:'pink', paddingRight:10, height:'50%'}}
+            style = {{borderWidth:3, borderColor:'white', paddingLeft:10,color:'white',paddingRight:10}}
+            placeholder="Enter your Story's Author here"
+            onChangeText={(text) => {
+              this.setState({ storyAuthor: text });
+            }}
+            value={this.state.storyAuthor}
+          />
+
+          <TextInput
+            style = {{borderWidth:3, borderColor:'pink', paddingLeft:10, marginTop:5, color:'pink', paddingRight:10, height:'45%'}}
             multiline={true}
             placeholder="Enter your story here"
             onChangeText={(text) => {
