@@ -1,7 +1,7 @@
 import * as React from 'react';
 import * as firebase from 'firebase';
 import db from '../config'
-import { StyleSheet, Text, View, TextInput , Image, TouchableOpacity, Alert} from 'react-native';
+import { StyleSheet, Text, View, TextInput , Image, TouchableOpacity, Alert, KeyboardAvoidingView} from 'react-native';
 import { Header } from 'react-native-elements';
 export default class WriteStoryScreen extends React.Component {
     
@@ -24,7 +24,7 @@ export default class WriteStoryScreen extends React.Component {
     }
     render(){
       return(
-        <View style = {{backgroundColor:'black', flex:1}}>
+        <KeyboardAvoidingView style = {{backgroundColor:'black', flex:1}}>
           <Header
             backgroundColor={'black'}
             centerComponent={{
@@ -71,7 +71,7 @@ export default class WriteStoryScreen extends React.Component {
             }}
             style={{ width: 200, height: 140, alignSelf: 'center' }}
           />
-        </View>
+        </KeyboardAvoidingView>
       )
     }
 }  

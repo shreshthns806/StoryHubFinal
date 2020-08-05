@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, FlatList } from 'react-native';
 import { Header } from 'react-native-elements';
+import db from '../config';
 export default class ReadStoryScreen extends React.Component {
     render(){
       return(
