@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { Text, View, FlatList } from 'react-native';
 import { Header } from 'react-native-elements';
 import db from '../config';
 
@@ -15,7 +15,7 @@ export default class ReadStoryScreen extends React.Component {
   }
 
     componentDidMount = async()=> {
-      //console.log('Entered ComponentDidMount')
+
       const entries = await db.collection('stories').limit(10).get();
       entries.docs.map(
         (item)=>{
@@ -25,7 +25,7 @@ export default class ReadStoryScreen extends React.Component {
           })
         }
       )
-      //console.log('Exited ComponentDidMount')
+      //console.log(this.state.allEntries)
     }
 
     //retrieveEntries = async ()=> {
@@ -57,7 +57,7 @@ export default class ReadStoryScreen extends React.Component {
     }
 
     render(){
-      console.log('inside Render')
+      //console.log('inside Render')
       return(
         <View style = {{flex:1, backgroundColor:'black'}}>
           <Header
@@ -69,19 +69,20 @@ export default class ReadStoryScreen extends React.Component {
           />
           <FlatList
             data = {this.state.allEntries}
-            renderItem={
-              ({item})=>{
+            renderItem = {
+              ({ item })=>{
+                console.log(item);
                 return(
-                  <View>
-                    <Text>{'storyAuthor'+item.storyAuthor}</Text>
-                    <Text>{'storyTitle'+item.storyTitle}</Text>
+                  <View style = {{marginTop:10}}>
+                    <Text style = {{fontSize : 10,}}>{'storyAuthor: '+item.storyAuthor}</Text>
+                    <Text style = {{fontSize:10,}}>{'storyTitle: '+item.storyTitle}</Text>
                   </View>
                 )
               }
             }
             keyExtractor = {
               (item,index)=>{
-                index.toString();
+                return index.toString();
               }
             }
             onEndReached = {
