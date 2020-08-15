@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Text, View, FlatList, TouchableOpacity } from 'react-native';
+import { Text, View, FlatList, TouchableOpacity, StyleSheet, KeyboardAvoidingView } from 'react-native';
 import { Header, SearchBar } from 'react-native-elements';
 import db from '../config';
 
@@ -12,6 +12,7 @@ export default class ReadStoryScreen extends React.Component {
       lastVisibleEntry : null,
       search:'',
       searchWhere:'',
+      isSearchPressed:false,
     }
   }
 
@@ -44,14 +45,8 @@ export default class ReadStoryScreen extends React.Component {
     //}
 
     searchByFilter = async (arg1)=> {
-      this.setState({
-        searchWhere:arg1,
-        allEntries:[],
-        lastVisibleEntry:null,
-      })
-      const searchWhere = this.state.searchWhere;
       const txt = this.state.search;
-        const entries = await db.collection('stories').where(searchWhere,'==',txt).limit(10).get()
+        const entries = await db.collection('stories').where(arg1,'==',txt).limit(10).get()
         entries.docs.map(
           (item)=>{
             console.log(item.data())
@@ -65,22 +60,38 @@ export default class ReadStoryScreen extends React.Component {
 
     fetchMoreEntries = async ()=> {
       //console.log('Entered FetchMoreEntries')
-      const entries = await db.collection('stories').startAfter(this.state.lastVisibleEntry).limit(10).get()
-      entries.docs.map(
+      const searchPress = this.state.isSearchPressed;
+      const searchWhere = this.state.searchWhere;
+      const txt = this.state.search;
+      if (!searchPress){
+        const entries = await db.collection('stories').startAfter(this.state.lastVisibleEntry).limit(10).get()
+        entries.docs.map(
         (item)=>{
           this.setState({
-            allEntries:[],
+            allEntries:[...this.state.allEntries,item.data()],
             lastVisibleEntry:item,
           })
         }
       )
+      }
+      if (searchPress){
+        const entries = await db.collection('stories').startAfter(this.state.lastVisibleEntry).where(searchWhere,'==',txt).limit(10).get()
+        entries.docs.map(
+        (item)=>{
+          this.setState({
+            allEntries:[...this.state.allEntries,item.data()],
+            lastVisibleEntry:item,
+          })
+        }
+      )
+      }
       //console.log('Exited fetchMoreEntries')
     }
 
     render(){
       //console.log('inside Render')
       return(
-        <View style = {{flex:1, backgroundColor:'black'}}>
+        <KeyboardAvoidingView style = {styles.container}>
           <Header
             backgroundColor={'black'}
             centerComponent={{
@@ -98,21 +109,39 @@ export default class ReadStoryScreen extends React.Component {
             value = {this.state.search}
           >
           </SearchBar>
-          <TouchableOpacity onPress = {()=>{this.searchByFilter('storyAuthor')}} style = {{padding:5, alignSelf:'center', marginTop:5, backgroundColor:'limegreen', width:115}}>
-            <Text style = {{color:'white'}}>Search By Author</Text>
+          <View>
+          <TouchableOpacity onPress = {()=>{
+              this.setState({
+                searchWhere:'storyAuthor',
+                allEntries:[],
+                lastVisibleEntry:null,
+                isSearchPressed:true,
+              })
+              this.searchByFilter('storyAuthor')}
+            } style = {styles.button}>
+            <Text style = {styles.buttonText}>Search By Author</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress = {()=>{this.searchByFilter('storyTitle')}}  style = {{padding:5, alignSelf:'center', marginTop:5, backgroundColor:'limegreen', width:115}}>
-            <Text style = {{color:'white', alignSelf:'center'}}>Search By Title</Text>
+          <TouchableOpacity onPress = {()=>{
+              this.setState({
+                searchWhere:'storyTitle',
+                allEntries:[],
+                lastVisibleEntry:null,
+                isSearchPressed:true,
+              })              
+              this.searchByFilter('storyTitle')}
+            }  style = {styles.button}>
+            <Text style = {styles.buttonText}>Search By Title</Text>
           </TouchableOpacity>
+          </View>
           <FlatList
             data = {this.state.allEntries}
             renderItem = {
               ({ item })=>{
                 //console.log(item);
                 return(
-                  <View style = {{marginTop:10}}>
-                    <Text style = {{fontSize : 10, color:'white'}}>{'storyAuthor: '+item.storyAuthor}</Text>
-                    <Text style = {{fontSize:10, color : 'white'}}>{'storyTitle: '+item.storyTitle}</Text>
+                  <View style = {styles.flatListContainer}>
+                    <Text style = {styles.flatListText}>{'Story Author: '+item.storyAuthor}</Text>
+                    <Text style = {styles.flatListText}>{'Story Title: '+item.storyTitle}</Text>
                   </View>
                 )
               }
@@ -122,12 +151,44 @@ export default class ReadStoryScreen extends React.Component {
                 return index.toString();
               }
             }
-
+            onEndReached = {this.fetchMoreEntries}
             onEndReachedThreshold = {0.7}
 
           ></FlatList>
-          <Text style = {{color:'white',}}>{this.state.searchWhere + this.state.search}</Text>
-        </View>
+       </KeyboardAvoidingView>
       )
     }
 }  
+
+const styles = StyleSheet.create({
+  container:{
+    flex:1,
+    backgroundColor:'black',
+  },
+  flatListContainer:{
+    borderWidth:5,
+    borderColor:'pink',
+    margin:5,
+  },
+  flatListText:{
+    color:'white',
+    paddingLeft:5,
+  },
+  flatList:{
+    borderTopWidth:4,
+    borderColor:'pink',
+  },
+  button:{
+    padding:5,
+    marginTop:5,
+    backgroundColor:'limegreen', 
+    width:115,
+    height:25,
+    alignSelf:'center',
+  },
+  buttonText:{
+    color:'black',
+    textAlign:'center',
+    fontSize:11,
+  }
+})
