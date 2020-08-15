@@ -20,7 +20,11 @@ export default class WriteStoryScreen extends React.Component {
         'storyAuthor' : this.state.storyAuthor,
       })
       Alert.alert("Submission complete")
-      
+      this.setState({
+        storyTitle:'',
+        storyContent:'',
+        storyAuthor:'',
+      })
     }
     render(){
       return(
