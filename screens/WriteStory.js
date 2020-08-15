@@ -73,7 +73,7 @@ export default class WriteStoryScreen extends React.Component {
               uri:
                 'https://life-craft.org/wp-content/uploads/2017/11/Man-Telling-Story.jpg',
             }}
-            style={{ width: 200, height: 140, alignSelf: 'center' }}
+            style={{ width: 200, height: 120, alignSelf: 'center', marginTop:10}}
           />
         </KeyboardAvoidingView>
       )
